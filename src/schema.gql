@@ -1,0 +1,40 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: Float!
+  name: String!
+  email: String!
+  password: String!
+}
+
+type GqlUserResponse {
+  code: Int!
+  success: Boolean!
+  message: String
+  data: User!
+}
+
+type GqlUsersArrayResponse {
+  code: Int!
+  success: Boolean!
+  message: String
+  data: [User!]!
+}
+
+type Query {
+  getHello: String!
+  getUser(id: Float!): GqlUserResponse!
+  getAllUsers: GqlUsersArrayResponse!
+}
+
+type Mutation {
+  createNewUser(input: CreateUserInput!): GqlUserResponse!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
