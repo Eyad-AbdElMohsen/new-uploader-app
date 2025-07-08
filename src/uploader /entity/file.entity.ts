@@ -35,7 +35,7 @@ export class File {
 
   @Column()
   @Field()
-  encoding?: string;
+  encoding: string;
 
   @Field()
   @Column()
@@ -43,7 +43,11 @@ export class File {
 
   @Column()
   @Field()
-  sizeInBytes?: number;
+  sizeInBytes: number;
+
+  @Column({ default: false })
+  @Field()
+  hasReference: boolean;
 
   @Column({ type: 'enum', enum: FileModelEnum })
   @Field(() => FileModelEnum)
