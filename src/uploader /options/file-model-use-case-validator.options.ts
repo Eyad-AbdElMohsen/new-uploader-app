@@ -1,6 +1,6 @@
 import { FileModelEnum, FileUploadUseCaseEnum } from '../enums/use-case.enum';
 
-export const FileModelUseCaseValidator: {
+export const FileModelUseCaseValidatorOptions: {
   [key in FileModelEnum]: FileUploadUseCaseEnum[];
 } = {
   PUBLIC: [],
