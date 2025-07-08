@@ -9,8 +9,9 @@ import { AppResolver } from './app.resolver';
 import { UserModule } from './user/user.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GqlResponseInterceptor } from './gql/gql.response.interceptor';
-import { GraphQLExceptionsFilter } from './filters/excepion.filter';
+import { GraphQLExceptionsFilter } from './filters/exeption.filter';
 import { join } from 'path';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -47,5 +48,6 @@ import { join } from 'path';
       useClass: GraphQLExceptionsFilter,
     },
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
