@@ -1,38 +1,60 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+} from 'typeorm';
+import { FileModelEnum, FileUploadUseCaseEnum } from '../enums/use-case.enum';
 
 @Entity('files')
+@Index(['fileName'])
 @ObjectType()
 export class File {
   @Field()
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
+
+  @Field()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field()
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Field({ nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
+  deletedAt?: Date;
 
   @Field()
   @Column()
-  filename: string;
+  fileName: string;
+
+  @Column()
+  @Field()
+  encoding?: string;
 
   @Field()
   @Column()
   mimeType: string;
 
-  @Field()
   @Column()
-  encoding: string;
-
   @Field()
-  @Column()
-  url: string;
+  sizeInBytes?: number;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  path?: string; // Optional internal S3 key if needed
+  @Column({ type: 'enum', enum: FileModelEnum })
+  @Field(() => FileModelEnum)
+  fileModel: FileModelEnum;
 
-  @Field(() => Number)
-  @Column('bigint')
-  size: number; // Size in bytes
+  @Column({ type: 'enum', enum: FileUploadUseCaseEnum })
+  @Field(() => FileUploadUseCaseEnum)
+  fileUseCase: FileUploadUseCaseEnum;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  uploaderId?: string; // Optional foreign key to User
+  @Field(() => String)
+  get url(): string {
+    return `${this.fileModel}/${this.fileName}`;
+  }
 }
