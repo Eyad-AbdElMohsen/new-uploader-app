@@ -5,5 +5,5 @@ export const FileModelUseCaseValidatorOptions: {
   [key in FileModelEnum]: FileUseCaseEnum[];
 } = {
   PUBLIC: [],
-  PROFILE: [FileUseCaseEnum.PROFILE_PICTURE],
+  PROFILE: [FileUseCaseEnum.PROFILE_PICTURE, FileUseCaseEnum.CV_FILE],
 };
