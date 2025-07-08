@@ -8,11 +8,3 @@ export enum FileModelEnum {
 registerEnumType(FileModelEnum, {
   name: 'FileModelEnum',
 });
-
-export enum FileUploadUseCaseEnum {
-  PROFILE_PICTURE = 'PROFILE_PICTURE',
-}
-
-registerEnumType(FileUploadUseCaseEnum, {
-  name: 'UploadUseCaseEnum',
-});

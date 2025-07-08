@@ -7,7 +7,8 @@ import {
   UpdateDateColumn,
   Index,
 } from 'typeorm';
-import { FileModelEnum, FileUploadUseCaseEnum } from '../enums/use-case.enum';
+import { FileUseCaseEnum } from '../enums/file-use-case.enum';
+import { FileModelEnum } from '../enums/file-model.enum';
 
 @Entity('files')
 @Index(['fileName'])
@@ -53,9 +54,9 @@ export class File {
   @Field(() => FileModelEnum)
   fileModel: FileModelEnum;
 
-  @Column({ type: 'enum', enum: FileUploadUseCaseEnum })
-  @Field(() => FileUploadUseCaseEnum)
-  fileUseCase: FileUploadUseCaseEnum;
+  @Column({ type: 'enum', enum: FileUseCaseEnum })
+  @Field(() => FileUseCaseEnum)
+  fileUseCase: FileUseCaseEnum;
 
   @Field(() => String)
   get url(): string {
