@@ -16,7 +16,11 @@ export class User {
   @Column()
   email: string;
 
-  @Field()
   @Column()
   password: string;
+
+
+  @Field({ nullable: true})
+  @Column({nullable: true})
+  access_token?: string
 }

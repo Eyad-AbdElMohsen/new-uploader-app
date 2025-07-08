@@ -6,7 +6,7 @@ type User {
   id: Float!
   name: String!
   email: String!
-  password: String!
+  access_token: String
 }
 
 type GqlUserResponse {
@@ -30,11 +30,17 @@ type Query {
 }
 
 type Mutation {
-  createNewUser(input: CreateUserInput!): GqlUserResponse!
+  register(input: CreateUserInput!): GqlUserResponse!
+  login(input: LoginInput!): GqlUserResponse!
 }
 
 input CreateUserInput {
   name: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
   email: String!
   password: String!
 }
