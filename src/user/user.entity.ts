@@ -31,9 +31,17 @@ export class User {
 
   @OneToOne(() => File)
   @Field(() => File, { nullable: true })
-  // @JoinColumn({name: "profilePictureId"})
+  @JoinColumn({name: "profilePictureId"})
   profilePicture: File;
 
-  // @Column({ nullable: true })
-  // profilePictureId: number;
+  @Column({ nullable: true })
+  profilePictureId: number;
+
+  @OneToOne(() => File)
+  @Field(() => File, { nullable: true })
+  @JoinColumn({name: "userCvId"})
+  userCv: File;
+
+  @Column({ nullable: true })
+  userCvId: number;
 }

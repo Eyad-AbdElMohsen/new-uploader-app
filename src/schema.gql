@@ -29,6 +29,7 @@ enum FileModelEnum {
 
 enum UploadUseCaseEnum {
   PROFILE_PICTURE
+  CV_FILE
 }
 
 type User {
@@ -37,6 +38,7 @@ type User {
   email: String!
   access_token: String
   profilePicture: File
+  userCv: File
 }
 
 type GqlUserResponse {

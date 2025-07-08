@@ -12,9 +12,12 @@ import { GqlResponseInterceptor } from './gql/gql.response.interceptor';
 import { GraphQLExceptionsFilter } from './filters/exeption.filter';
 import { join } from 'path';
 import { AppController } from './app.controller';
+import { FileModelEnum } from './uploader /enums/file-model.enum';
+import { FileModule } from './uploader /file.module';
 
 @Module({
   imports: [
+    FileModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
