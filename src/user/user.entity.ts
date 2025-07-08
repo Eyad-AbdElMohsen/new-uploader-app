@@ -1,5 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { File } from 'src/uploader /entity/file.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -19,8 +26,14 @@ export class User {
   @Column()
   password: string;
 
+  @Field({ nullable: true })
+  access_token?: string;
 
-  @Field({ nullable: true})
-  @Column({nullable: true})
-  access_token?: string
+  @OneToOne(() => File)
+  @Field(() => File, { nullable: true })
+  // @JoinColumn({name: "profilePictureId"})
+  profilePicture: File;
+
+  // @Column({ nullable: true })
+  // profilePictureId: number;
 }

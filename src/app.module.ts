@@ -7,10 +7,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
 import { UserModule } from './user/user.module';
-import { User } from './user/user.entity';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GqlResponseInterceptor } from './gql/gql.response.interceptor';
 import { GraphQLExceptionsFilter } from './filters/excepion.filter';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ import { GraphQLExceptionsFilter } from './filters/excepion.filter';
         username: configService.get('USERNAME'),
         password: configService.get('PASSWORD'),
         database: configService.get('DATABASE'),
-        entities: [User, File],
+        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
         synchronize: true,
       }),
     }),

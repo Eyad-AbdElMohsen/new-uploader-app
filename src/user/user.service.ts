@@ -31,13 +31,10 @@ export class UserService {
       const isAlreadyExist = await this.getUserByEmail(input.email);
       if (isAlreadyExist)
         throw new HttpException(
-          'Email is Alread Exist!',
+          'Email is Already Exist!',
           HttpStatus.BAD_REQUEST,
         );
-      input.password = await bcrypt.hash(
-        input.password,
-        10,
-      );
+      input.password = await bcrypt.hash(input.password, 10);
 
       const newUser = this.userRepo.create(input);
       return await this.userRepo.save(newUser);
@@ -58,11 +55,7 @@ export class UserService {
     const token = this.jwtService.sign(payload);
 
     user.access_token = token;
-    await this.userRepo.save(user);
 
-    // Hide password in response
-    const { password, ...userData } = user;
-
-    return userData;
+    return user;
   }
 }
