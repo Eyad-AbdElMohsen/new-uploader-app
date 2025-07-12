@@ -11,12 +11,12 @@ import { map } from 'rxjs/operators';
 export class GqlResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map(res => {
+      map((res) => {
         return {
           code: 200,
           success: true,
           message: 'Operation done successfully',
-          data: res
+          data: res,
         };
       }),
     );

@@ -35,7 +35,7 @@ export function generateGqlResponse<T, k>(
     @Field({ nullable: true })
     message?: string;
 
-    @Field(() => Tclass)
+    @Field(() => Tclass, { nullable: true })
     data?: DataType;
   }
 

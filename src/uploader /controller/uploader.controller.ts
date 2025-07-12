@@ -7,8 +7,9 @@ export class UploadController {
   constructor(private readonly uploadService: UploaderService) {}
 
   @Post()
-  upload(@Req() req: Request, @Res() res: Response) {
-    console.log("hi from controller")
-    return this.uploadService.handleUpload(req, res);
+  async upload(@Req() req: Request) {
+    console.log('hello');
+    const x = await this.uploadService.uploadFile(req);
+    return x;
   }
 }

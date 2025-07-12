@@ -3,10 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { File } from './entity/file.entity';
 import { UploaderService } from './services/uploader.service';
 import { UploadController } from './controller/uploader.controller';
+import { LOCAL_STRATEGY } from './strategies';
+import { UploaderLocalStrategy } from './strategies/uploader-local.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([File])],
-  providers: [UploaderService],
+  providers: [
+    UploaderService,
+    { provide: LOCAL_STRATEGY, useClass: UploaderLocalStrategy },
+  ],
   exports: [],
   controllers: [UploadController],
 })

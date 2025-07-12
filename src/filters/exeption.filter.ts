@@ -4,11 +4,12 @@ import {
   HttpException,
   ExceptionFilter,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { GraphQLError } from 'graphql';
 import { QueryFailedError } from 'typeorm';
 
 @Catch()
-export class GraphQLExceptionsFilter implements ExceptionFilter {
+export class CustomExceptionFilter implements ExceptionFilter {
   res = {
     code: 500,
     message: 'Internal Server Error',
@@ -39,12 +40,13 @@ export class GraphQLExceptionsFilter implements ExceptionFilter {
       this.res.message = exception.message;
       console.error(`Error: ${this.res.message}`);
     }
+    if (host.getType() == 'http') {
+      const ctx = host.switchToHttp();
+      const response = ctx.getResponse<Response>();
+      const request = ctx.getRequest<Request>();
 
-    return new GraphQLError(this.res.message, {
-      extensions: {
-        success: this.res.success,
-        code: this.res.code,
-      },
-    });
+      return response.status(this.res.code).json(this.res);
+    }
+    return this.res;
   }
 }

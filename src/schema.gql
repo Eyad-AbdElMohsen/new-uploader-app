@@ -2,6 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type GqlStringResponse {
+  code: Int!
+  success: Boolean!
+  message: String
+  data: String
+}
+
 type File {
   id: Float!
   createdAt: DateTime!
@@ -47,18 +54,18 @@ type GqlUserResponse {
   code: Int!
   success: Boolean!
   message: String
-  data: User!
+  data: User
 }
 
 type GqlUsersArrayResponse {
   code: Int!
   success: Boolean!
   message: String
-  data: [User!]!
+  data: [User!]
 }
 
 type Query {
-  getHello: String!
+  getHello: GqlStringResponse!
   getUser(id: Float!): GqlUserResponse!
   getAllUsers: GqlUsersArrayResponse!
 }

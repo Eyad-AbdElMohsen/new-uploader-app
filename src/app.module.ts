@@ -9,7 +9,7 @@ import { AppResolver } from './app.resolver';
 import { UserModule } from './user/user.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GqlResponseInterceptor } from './gql/gql.response.interceptor';
-import { GraphQLExceptionsFilter } from './filters/exeption.filter';
+import { CustomExceptionFilter } from './filters/exeption.filter';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { FileModelEnum } from './uploader /enums/file-model.enum';
@@ -48,7 +48,7 @@ import { FileModule } from './uploader /file.module';
     },
     {
       provide: APP_FILTER,
-      useClass: GraphQLExceptionsFilter,
+      useClass: CustomExceptionFilter,
     },
   ],
   controllers: [AppController],
