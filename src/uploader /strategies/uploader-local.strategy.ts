@@ -10,12 +10,17 @@ export class UploaderLocalStrategy implements IUploaderStrategy {
   async uploadFile(
     req: Request,
     fileInput: UploadFileInput,
-    validator: (
+    fileValidator: (
       fileInput: UploadFileInput,
       sizeInBytes: number,
+      metadata: Busboy.FileInfo,
       isFirstChunk: boolean,
     ) => void,
-    callBack: (metadata: Busboy.FileInfo) => Promise<void>,
+    callBack: (
+      metadata: Busboy.FileInfo,
+      sizeInBytes: number,
+      saveName: string,
+    ) => Promise<void>,
   ): Promise<any> {
     const busboy = Busboy({ headers: req.headers });
 
@@ -29,7 +34,7 @@ export class UploaderLocalStrategy implements IUploaderStrategy {
     );
 
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-
+    let saveName: string;
     busboy.on(
       'file',
       (
@@ -37,24 +42,30 @@ export class UploaderLocalStrategy implements IUploaderStrategy {
         fileStream: NodeJS.ReadableStream,
         metadata: Busboy.FileInfo,
       ) => {
-        const saveName = `${fileInput.useCase}-${Date.now()}-${metadata.filename}`;
+        saveName = `${fileInput.useCase}-${Date.now()}-${metadata.filename}`;
 
         const savePath = path.join(UPLOAD_DIR, saveName);
         const writeStream = fs.createWriteStream(savePath);
 
         let sizeInBytes = 0;
-        let isFirstChunk = false;
+        let isFirstChunk = true;
 
         fileStream.on('data', (chunk) => {
           sizeInBytes += chunk.length;
-          validator(fileInput, sizeInBytes, isFirstChunk);
+          try {
+            fileValidator(fileInput, sizeInBytes, metadata, isFirstChunk);
+          } catch (err) {
+            this.destroyWriteStream(writeStream, savePath);
+            throw err;
+          }
+          isFirstChunk = false;
           writeStream.write(chunk);
         });
 
         fileStream.on('end', async () => {
           writeStream.end();
           try {
-            await callBack(metadata);
+            await callBack(metadata, sizeInBytes, saveName);
           } catch (error) {
             this.destroyWriteStream(writeStream, savePath);
             throw error;

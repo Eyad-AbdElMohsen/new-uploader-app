@@ -8,34 +8,38 @@ import { validationOptions } from '../options/validation.options';
 
 @Injectable()
 export class UploaderValidationService {
-  validator(
+  useCaseValidator(fileInput: UploadFileInput) {
+    if (
+      !FileModelUseCaseValidatorOptions[fileInput.model].includes(
+        fileInput.useCase,
+      )
+    ) {
+      throw new BadRequestException('invalid useCase');
+    }
+  }
+
+  fileValidator(
     fileInput: UploadFileInput,
     sizeInBytes: number,
-    isFirstChunk: boolean,
     metadata: Busboy.FileInfo,
+    isFirstChunk: boolean,
   ) {
-    //if(!isFirstChunk)
-
-    const { useCase, model } = fileInput;
-    const allowedUseCases = FileModelUseCaseValidatorOptions[model];
-    if (!allowedUseCases?.includes(useCase)) {
-      throw new BadRequestException('Invalid model/useCase combination');
-    }
-
+    const { useCase } = fileInput;
     const validation: FileValidationOptions = validationOptions[useCase];
-    if (!validation) {
-      throw new BadRequestException('No validation rule for this useCase');
+
+    if (isFirstChunk) {
+      console.log(metadata.mimeType);
+      if (
+        !validation.acceptedFormats.includes(metadata.mimeType as FileTypeEnum)
+      ) {
+        throw new BadRequestException('Invalid file format');
+      }
     }
 
-    const fileExtension: FileTypeEnum = FileTypeEnum[metadata.mimeType];
-    if (!validation.acceptedFormats.includes(fileExtension)) {
-      throw new BadRequestException('Invalid file format');
-    }
-
-    if(sizeInBytes > validationOptions[useCase].maxSizeInBytes){
+    if (sizeInBytes > validationOptions[useCase].maxSizeInBytes) {
       throw new BadRequestException('Max file size exceeded');
     }
-      
-    return true
+
+    return true;
   }
 }

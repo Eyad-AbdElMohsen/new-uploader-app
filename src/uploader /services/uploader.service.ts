@@ -1,12 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Busboy from 'busboy';
-import {
-  BadRequestException,
-  HttpException,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
@@ -14,10 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { File } from '../entity/file.entity';
 import { UploadFileInput } from '../inputs/upload-file.input';
-import { validationOptions } from '../options/validation.options';
-import { FileModelUseCaseValidatorOptions } from '../options/file-model-use-case-validator.options';
-import { FileValidationOptions } from '../types/file-validation-options.type';
-import { FileTypeEnum } from '../enums/file-type.enum';
 import { LOCAL_STRATEGY } from '../strategies';
 import { IUploaderStrategy } from '../interfaces/uploader.strategy';
 import { UploaderValidationService } from './file-validation.service';
@@ -29,7 +20,7 @@ export class UploaderService {
     private readonly fileRepository: Repository<File>,
     @Inject(LOCAL_STRATEGY)
     private readonly localUploaderStrategy: IUploaderStrategy,
-    private readonly uploaderValidationService: UploaderValidationService
+    private readonly uploaderValidationService: UploaderValidationService,
   ) {}
 
   async uploadFile(req: Request) {
@@ -44,14 +35,32 @@ export class UploaderService {
       throw new BadRequestException('validation error');
     }
 
-    // await this.localUploaderStrategy.uploadFile(
-    //   req,
-    //   fileInput,
-    //   this.uploaderValidationService.validator(
-    //     fileInput, 0, false, m
-    //   ),
-    //   async () => {},
-    // );
+    try {
+      this.uploaderValidationService.useCaseValidator(fileInput);
+
+      await this.localUploaderStrategy.uploadFile(
+        req,
+        fileInput,
+        this.uploaderValidationService.fileValidator,
+        async (
+          metadata: Busboy.FileInfo,
+          sizeInBytes: number,
+          fileName: string,
+        ) => {
+          const file = this.fileRepository.create({
+            encoding: metadata.encoding,
+            fileModel: fileInput.model,
+            fileUseCase: fileInput.useCase,
+            sizeInBytes,
+            fileName,
+            mimeType: metadata.mimeType,
+          });
+          await this.fileRepository.save(file);
+        },
+      );
+    } catch (err) {
+      console.log(err);
+    }
 
     return 'file uploaded successfully';
   }

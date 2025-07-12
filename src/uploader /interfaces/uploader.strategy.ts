@@ -7,12 +7,17 @@ export interface IUploaderStrategy {
   uploadFile(
     req: Request,
     fileInput: UploadFileInput,
-    validator: (
+    fileValidator: (
       fileInput: UploadFileInput,
       sizeInBytes: number,
+      metadata: Busboy.FileInfo,
       isFirstChunk: boolean,
     ) => void,
-    callBack: (metadata: Busboy.FileInfo) => Promise<void>,
+    callBack: (
+      metadata: Busboy.FileInfo,
+      sizeInBytes: number,
+      saveName: string,
+    ) => Promise<void>,
   ): Promise<Partial<File>>;
 
   destroyWriteStream(writeStream: fs.WriteStream, savePath: string): void;
