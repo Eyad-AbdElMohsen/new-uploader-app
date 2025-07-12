@@ -20,6 +20,7 @@ import { FileValidationOptions } from '../types/file-validation-options.type';
 import { FileTypeEnum } from '../enums/file-type.enum';
 import { LOCAL_STRATEGY } from '../strategies';
 import { IUploaderStrategy } from '../interfaces/uploader.strategy';
+import { UploaderValidationService } from './file-validation.service';
 
 @Injectable()
 export class UploaderService {
@@ -28,6 +29,7 @@ export class UploaderService {
     private readonly fileRepository: Repository<File>,
     @Inject(LOCAL_STRATEGY)
     private readonly localUploaderStrategy: IUploaderStrategy,
+    private readonly uploaderValidationService: UploaderValidationService
   ) {}
 
   async uploadFile(req: Request) {
@@ -42,12 +44,14 @@ export class UploaderService {
       throw new BadRequestException('validation error');
     }
 
-    await this.localUploaderStrategy.uploadFile(
-      req,
-      fileInput,
-      () => {},
-      async () => {},
-    );
+    // await this.localUploaderStrategy.uploadFile(
+    //   req,
+    //   fileInput,
+    //   this.uploaderValidationService.validator(
+    //     fileInput, 0, false, m
+    //   ),
+    //   async () => {},
+    // );
 
     return 'file uploaded successfully';
   }

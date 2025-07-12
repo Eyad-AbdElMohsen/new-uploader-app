@@ -1,29 +1,41 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { UploadFileInput } from '../inputs/upload-file.input';
+import { FileModelUseCaseValidatorOptions } from '../options/file-model-use-case-validator.options';
+import { FileValidationOptions } from '../types/file-validation-options.type';
+import { FileTypeEnum } from '../enums/file-type.enum';
+import * as Busboy from 'busboy';
+import { validationOptions } from '../options/validation.options';
 
-            // const { useCase, model } = formFields;
+@Injectable()
+export class UploaderValidationService {
+  validator(
+    fileInput: UploadFileInput,
+    sizeInBytes: number,
+    isFirstChunk: boolean,
+    metadata: Busboy.FileInfo,
+  ) {
+    //if(!isFirstChunk)
 
-            // const allowedUseCases = FileModelUseCaseValidatorOptions[model];
-            // if (!allowedUseCases?.includes(useCase)) {
-            //   res
-            //     .status(400)
-            //     .json({ error: 'Invalid model/useCase combination' });
-            //   fileStream.resume();
-            //   return;
-            // }
+    const { useCase, model } = fileInput;
+    const allowedUseCases = FileModelUseCaseValidatorOptions[model];
+    if (!allowedUseCases?.includes(useCase)) {
+      throw new BadRequestException('Invalid model/useCase combination');
+    }
 
-            // const validation: FileValidationOptions =
-            //   validationOptions[useCase];
-            // if (!validation) {
-            //   res
-            //     .status(400)
-            //     .json({ error: 'No validation rule for this useCase' });
-            //   fileStream.resume();
-            //   return;
-            // }
+    const validation: FileValidationOptions = validationOptions[useCase];
+    if (!validation) {
+      throw new BadRequestException('No validation rule for this useCase');
+    }
 
-            // const fileExtension: FileTypeEnum = FileTypeEnum[metadata.mimeType];
+    const fileExtension: FileTypeEnum = FileTypeEnum[metadata.mimeType];
+    if (!validation.acceptedFormats.includes(fileExtension)) {
+      throw new BadRequestException('Invalid file format');
+    }
 
-            // if (!validation.acceptedFormats.includes(fileExtension)) {
-            //   res.status(400).json({ error: 'Invalid file format' });
-            //   fileStream.resume();
-            //   return;
-            // }
+    if(sizeInBytes > validationOptions[useCase].maxSizeInBytes){
+      throw new BadRequestException('Max file size exceeded');
+    }
+      
+    return true
+  }
+}
