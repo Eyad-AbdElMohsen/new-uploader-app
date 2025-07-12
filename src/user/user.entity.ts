@@ -34,6 +34,7 @@ export class User {
   @JoinColumn({name: "profilePictureId"})
   profilePicture: File;
 
+  @Field({ nullable: true })
   @Column({ nullable: true })
   profilePictureId: number;
 
@@ -42,6 +43,7 @@ export class User {
   @JoinColumn({name: "userCvId"})
   userCv: File;
 
+  @Field({ nullable: true })
   @Column({ nullable: true })
   userCvId: number;
 }

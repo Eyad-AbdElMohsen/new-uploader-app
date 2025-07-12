@@ -4,7 +4,6 @@ import { UserResolver } from './user.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { File } from 'src/uploader /entity/file.entity';
 
 @Module({
   imports: [

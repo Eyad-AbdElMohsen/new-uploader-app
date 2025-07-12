@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { FileTypeEnum } from '../enums/file-type.enum';
 import { FileUseCaseEnum } from '../enums/file-use-case.enum';
 import { FileValidationOptions } from '../types/file-validation-options.type';
@@ -18,12 +18,14 @@ export const validationOptions: {
       FileTypeEnum.BMP,
       FileTypeEnum.TIFF,
     ],
-    maxSizeInBytes: 5 * 1024 * 1024,
+    maxSizeInBytes: 2 * 1024 * 1024,
     error: new BadRequestException('Invalid profile picture'),
   },
   CV_FILE: {
     acceptedFormats: [
-        FileTypeEnum.PDF
+        FileTypeEnum.PDF,
+        FileTypeEnum.TXT,
+        FileTypeEnum.JSON,
     ],
     maxSizeInBytes: 1024 * 1024 * 5,
     error: new BadRequestException('Invalid cv file')

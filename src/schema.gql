@@ -38,7 +38,9 @@ type User {
   email: String!
   access_token: String
   profilePicture: File
+  profilePictureId: Float
   userCv: File
+  userCvId: Float
 }
 
 type GqlUserResponse {

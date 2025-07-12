@@ -9,6 +9,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { File } from '../entity/file.entity';
 import { UploadFileInput } from '../inputs/upload-file.input';
+import { validationOptions } from '../options/validation.options';
+import { FileModelUseCaseValidatorOptions } from '../options/file-model-use-case-validator.options';
+import { FileValidationOptions } from '../types/file-validation-options.type';
+import { FileTypeEnum } from '../enums/file-type.enum';
 
 const UPLOAD_DIR = path.resolve(__dirname, '..', '..', '..', 'storage');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -22,8 +26,9 @@ export class UploaderService {
 
   async handleUpload(req: Request, res: Response) {
     const busboy = Busboy({ headers: req.headers });
+    console.log(req.headers)
     const formFields: Record<string, string> = {};
-
+    //fieldName: string, value: FileUseCaseEnum
     busboy.on('field', (fieldname, value) => {
       formFields[fieldname] = value;
     });
@@ -43,21 +48,51 @@ export class UploaderService {
 
         fileStream.on('data', (chunk) => {
           sizeInBytes += chunk.length;
-          console.log(chunk.length);
           writeStream.write(chunk);
         });
 
         fileStream.on('end', async () => {
           writeStream.end();
-
           try {
             const dto = plainToInstance(UploadFileInput, {
               useCase: formFields.useCase,
               model: formFields.model,
             });
-
+            console.log(sizeInBytes)
             await validateOrReject(dto);
+            // next()
 
+            /// validation file
+            const { useCase, model } = formFields;
+
+            const allowedUseCases = FileModelUseCaseValidatorOptions[model];
+            if (!allowedUseCases?.includes(useCase)) {
+              res
+                .status(400)
+                .json({ error: 'Invalid model/useCase combination' });
+              fileStream.resume();
+              return;
+            }
+
+            const validation: FileValidationOptions =
+              validationOptions[useCase];
+            if (!validation) {
+              res
+                .status(400)
+                .json({ error: 'No validation rule for this useCase' });
+              fileStream.resume();
+              return;
+            }
+
+            const fileExtension: FileTypeEnum = metadata.mimeType;
+
+            if (!validation.acceptedFormats.includes(fileExtension)) {
+              res.status(400).json({ error: 'Invalid file format' });
+              fileStream.resume();
+              return;
+            }
+
+            // file service
             const fileEntity = this.fileRepo.create({
               fileName: saveName,
               encoding: metadata.encoding,
